@@ -46,7 +46,6 @@ def angle_between(p1, p2):
     return np.rad2deg((ang1 - ang2) % (2 * np.pi))
 
 
-    
 
 def getEmotionFromPoint(valence, arousal, cat=0):
     angle = angle_between((valence, arousal), (0,0))
