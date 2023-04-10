@@ -51,7 +51,6 @@ def extract_frame_feature(wavdir, distdir):
         
         signal, sampling_rate = audiofile.read(
             wavpath,
-            duration=30,
             always_2d=True,
         )
         smile = opensmile.Smile(
