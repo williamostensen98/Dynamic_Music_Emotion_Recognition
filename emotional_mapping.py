@@ -52,11 +52,23 @@ def getEmotionFromPoint(valence, arousal, cat=0):
     emotion = getEmotionFromAngle(angle, cat)
     return emotion
 
+def getEmotionListFromPointList(arousal_values, valence_values):
+    assert len(arousal_values) == len(valence_values), "Valence and arousal lists must be same lenght with index one-to-one"
+    emotion_list = []
+    for a,v in zip(arousal_values, valence_values):
+        emotion = getEmotionFromPoint(v,a, cat=0)
+        emotion_list.append(emotion)
+    return emotion_list
+
 def main():
     valence = 1
     arousal = 0.5
     print(getEmotionFromPoint(valence, arousal, 1))
-    
+    a_list = [-0.5, -0.5, 0.6, -0.1, 0.6, 0.6, -0.7, 0.7]
+    v_list = [0, 0.5, 0.6, 0.6, 1, 0.6, 0.1, 0.7]
+    v_list = v_list[::-1]
+
+    print(getEmotionListFromPointList(a_list, v_list))
 
 if __name__ == "__main__":
     main()
