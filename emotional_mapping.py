@@ -60,15 +60,33 @@ def getEmotionListFromPointList(arousal_values, valence_values):
         emotion_list.append(emotion)
     return emotion_list
 
+def getEmotionDistribution(emotion_list, normalize=0):
+    distribution = np.zeros(8,  dtype=np.float32)
+    for l in emotion_list:
+        distribution[l] += 1
+    if normalize:
+        amin, amax = min(distribution), max(distribution)
+        for i, val in enumerate(distribution):
+            distribution[i] = (val-amin) / (amax-amin)
+    return distribution.tolist()
+
 def main():
     valence = 1
     arousal = 0.5
     print(getEmotionFromPoint(valence, arousal, 1))
-    a_list = [-0.5, -0.5, 0.6, -0.1, 0.6, 0.6, -0.7, 0.7]
-    v_list = [0, 0.5, 0.6, 0.6, 1, 0.6, 0.1, 0.7]
-    v_list = v_list[::-1]
+    a_list = [-0.5, -0.5, 0.6, -0.1, 0.6, 0.6, -0.7, 0.7, -0.5, -0.5, 0.6, -0.1, 0.6, 0.6, -0.7, 0.7]
+    v_list = [0, 0.5, 0.6, 0.6, 1, 0.6, 0.1, 0.7, -0.5, -0.5, 0.6, -0.1, 0.6, 0.6, -0.7, 0.7]
+    
 
-    print(getEmotionListFromPointList(a_list, v_list))
+    emotion_lsit = getEmotionListFromPointList(a_list, v_list)
+
+    print(emotion_lsit)
+
+    dist = getEmotionDistribution(emotion_lsit, normalize=1)
+    print(dist)
+
+
+
 
 if __name__ == "__main__":
     main()
