@@ -117,8 +117,10 @@ def main():
         os.makedirs(outdir)
 
     print("Collecting features and annotations...")
-    features = pd.read_csv(os.path.join(DATASET_DIR, 'dynamic_features.csv'))
+    features = pd.read_csv(os.path.join(DATASET_DIR, 'dynamic_features260dim.csv'))
     annotations = pd.read_csv(os.path.join(DATASET_DIR, 'annotations.csv'))
+
+    print("Number of features:",len(features.columns) )
     
     dataset = pd.merge(features, annotations, on=['musicId', 'frameTime'])
 
@@ -162,7 +164,7 @@ def main():
 
     print('Predicting in Valence dimension...')
     regression_results(regressor, "SVR", trainset, testset, featureNames, 'Valence', 'audio', prefunc, outdir)
-
+    print("")
     print('In Arousal dimension...')
     compute_rmse_across_songs(os.path.join(outdir,'audio_regression_results_Arousal.csv'))
     print('In Valence dimension...')

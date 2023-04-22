@@ -66,31 +66,31 @@ def main():
     print("Collecting features for song...")
 
     wavdir = os.path.join(song_data, "wav")
-    lld_distdir = os.path.join(song_data, "features_lld")
-    dynamic_distdir = os.path.join(song_data, "features_out")
-    all_dynamic_distfile = os.path.join(song_data, "dynamic_features.csv")
+    lld_distdir = os.path.join(song_data, "features_lld_260")
+    dynamic_distdir = os.path.join(song_data, "features_out_260")
+    all_dynamic_distfile = os.path.join(song_data, "dynamic_features260.csv")
 
     names = extract_frame_feature(wavdir,lld_distdir)
     process_dynamic_feature(lld_distdir,dynamic_distdir,all_dynamic_distfile, names)
 
-    features = pd.read_csv(os.path.join(song_data, 'dynamic_features.csv'))
+    features = pd.read_csv(os.path.join(song_data, 'dynamic_features260.csv'))
 
   
     
 
     print("Loading regressor SVRs for Valence and Arousal...")
-    model_arousal = pickle.load(open("model/SVR_Arousal_model.sav", 'rb'))
-    model_valence = pickle.load(open("model/SVR_Valence_model.sav", 'rb'))
+    model_arousal = pickle.load(open("model/SVR_Arousal_model_260.sav", 'rb'))
+    model_valence = pickle.load(open("model/SVR_Valence_model_260.sav", 'rb'))
 
 
     featureNames = features.columns[2:]
     
     
     print('Predicting in Arousal dimension...')
-    predict(model_arousal, features, featureNames, 'Arousal(mean)', song_folder.replace("/", ""), outdir)
+    predict(model_arousal, features, featureNames, 'Arousal', song_folder.replace("/", ""), outdir)
 
     print('Predicting in Valence dimension...')
-    predict(model_valence, features, featureNames, 'Valence(mean)', song_folder.replace("/", ""), outdir)
+    predict(model_valence, features, featureNames, 'Valence', song_folder.replace("/", ""), outdir)
 
 
 if __name__ == "__main__":

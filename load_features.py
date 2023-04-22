@@ -53,18 +53,29 @@ def extract_frame_feature(wavdir, distdir):
             wavpath,
             always_2d=True,
         )
-        smile = opensmile.Smile(
+        lld = opensmile.Smile(
             feature_set=opensmile.FeatureSet.ComParE_2016,
             feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
         )
+        lld_d = opensmile.Smile(
+            feature_set=opensmile.FeatureSet.ComParE_2016,
+            feature_level=opensmile.FeatureLevel.LowLevelDescriptors_Deltas,
+        )
 
-        data = smile.process_signal(
+        lld_data = lld.process_signal(
             signal,
             sampling_rate
         )
-       
-        data.to_csv(distfile,index=True)
-    return smile.feature_names
+
+        lld_d_data = lld_d.process_signal(
+            signal,
+            sampling_rate
+        )
+
+        llds = pd.merge(lld_data, lld_d_data, on=["start", "end"])
+        llds.to_csv(distfile,index=True)
+
+    return lld.feature_names + lld_d.feature_names
 
 
 def process_dynamic_feature(llddir, distdir, all_songs_distfile, featureNames):
@@ -88,7 +99,7 @@ def process_dynamic_feature(llddir, distdir, all_songs_distfile, featureNames):
     headers = ['musicId', 'frameTime']
     headers += [str(f+'_mean') for f in featureNames]
     headers += [str(f +"_std") for f in featureNames]
-    
+
     window = 1
     overlap = 0.5
 
@@ -118,7 +129,6 @@ def _compute_feature_with_window_and_overlap(lldpath, window, overlap):
 
     fs = 0.01
     num_in_new_frame = floor(overlap/fs)
-    print("num", num_in_new_frame)
     num_in_window = floor(window/fs)
 
     # load the features from disk
@@ -166,19 +176,33 @@ def _write_features_to_csv(headers, musicIds, contents, distfile):
 
 
 if __name__ == "__main__":
-    wavdir ="dataset/wav/"
+    wavdir ="dataset_deam/wav/"
     opensmiledir = "opensmile-3.0/"
 
     static_distfile = "static_features.arff"
-    lld_distdir = "features_lld"
-    dynamic_distdir = "features_out"
-    all_dynamic_distfile = "test_dynamic_features.csv"
+    lld_distdir = "features_lld_260"
+    dynamic_distdir = "features_out_260"
+    all_dynamic_distfile = "dynamic_features260dim.csv"
 
     delimiter = ";"
 
     #extract_all_wav_feature(wavdir,static_distfile,opensmiledir)
-    names = extract_frame_feature(wavdir,lld_distdir)
+    #print("EXTRACTING FRAME FEATURES")
+    #names = extract_frame_feature(wavdir,lld_distdir)
+    #print(len(names), "FEATURES EXTRACTED")
+    lld = opensmile.Smile(
+        feature_set=opensmile.FeatureSet.ComParE_2016,
+        feature_level=opensmile.FeatureLevel.LowLevelDescriptors,
+        )
+    lld_d = opensmile.Smile(
+        feature_set=opensmile.FeatureSet.ComParE_2016,
+        feature_level=opensmile.FeatureLevel.LowLevelDescriptors_Deltas,
+    )
+    names = lld.feature_names + lld_d.feature_names
+
+    print("PROCESSING DYNAMIC FETAURES")
     process_dynamic_feature(lld_distdir,dynamic_distdir,all_dynamic_distfile, names)
+    print("FEATURES EXTRACTED AND PROCESSED")
 
     
 
